@@ -93,4 +93,30 @@ public:
     }
 };
 
+class Contact
+{
+protected:
+    string name;
+    string number;
+    string email;
+    string type;
+
+public:
+    Contact() {}
+
+    Contact(const string &name, const string &number, const string &email, const string &type)
+        : name(name), number(number), email(email), type(type) {}
+
+    // Getters
+    string getName() const { return name; }
+    string getNumber() const { return number; }
+    string getEmail() const { return email; }
+    string getType() const { return type; }
+
+    // Setters
+    void setName(const string &name) { this->name = name; }
+    void setNumber(const string &number) { this->number = number; }
+    void setEmail(const string &email) { this->email = email; }
+    void setType(const string &type) { this->type = type; }
+};
 
