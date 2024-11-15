@@ -337,3 +337,89 @@ public:
         return true;
     }
 };
+
+class SearchContact : public Validations
+{
+public:
+    void searchContacts(Contact ptclContacts[], int ptclCount, Contact localContacts[], int localCount, Contact emergencyContacts[], int emergencyCount)
+    {
+        string keyword;
+        while (true)
+        {
+            cout << "\n\tEnter search keyword (name, number, or email): \t";
+            getline(cin, keyword);
+            if (stringValidation(keyword))
+            {
+                break;
+            }
+            cout << "\n\tInvalid input. Please enter a valid keyword.";
+        }
+
+        system("cls");
+        bool found = false;
+        cout << "\n\n\tSearch Results:\n";
+
+        // Convert keyword to lowercase for case-insensitive name search
+        string keywordLower = toLower(keyword);
+
+        // Search in PTCL contacts
+        for (int i = 0; i < ptclCount; i++)
+        {
+            if (toLower(ptclContacts[i].getName()).find(keywordLower) != string::npos ||
+                ptclContacts[i].getNumber().find(keyword) != string::npos ||
+                ptclContacts[i].getEmail().find(keyword) != string::npos)
+            {
+                displayContact(ptclContacts[i]);
+                found = true;
+            }
+        }
+
+        // Search in Local contacts
+        for (int i = 0; i < localCount; i++)
+        {
+            if (toLower(localContacts[i].getName()).find(keywordLower) != string::npos ||
+                localContacts[i].getNumber().find(keyword) != string::npos ||
+                localContacts[i].getEmail().find(keyword) != string::npos)
+            {
+                displayContact(localContacts[i]);
+                found = true;
+            }
+        }
+
+        // Search in Emergency contacts
+        for (int i = 0; i < emergencyCount; i++)
+        {
+            if (toLower(emergencyContacts[i].getName()).find(keywordLower) != string::npos ||
+                emergencyContacts[i].getNumber().find(keyword) != string::npos)
+            {
+                displayContact(emergencyContacts[i]);
+                found = true;
+            }
+        }
+
+        if (!found)
+        {
+            cout << "\n\n\tNo contact found matching the keyword!\n";
+        }
+    }
+
+private:
+    void displayContact(const Contact &contact)
+    {
+        cout << "\n\tName : \t\t" << contact.getName();
+        cout << "\n\tNumber :\t" << contact.getNumber();
+        if (contact.getType() != "Emergency")
+        {
+            cout << "\n\tEmail : \t" << contact.getEmail();
+        }
+        cout << "\n\tType : \t\t" << contact.getType();
+        cout << "\n";
+    }
+
+    string toLower(const string &str)
+    {
+        string lowerStr = str;
+        transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+        return lowerStr;
+    }
+};
