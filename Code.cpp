@@ -423,3 +423,175 @@ private:
         return lowerStr;
     }
 };
+class EditContact : public Validations
+{
+public:
+    void editContact(Contact ptclContacts[], int &ptclCount, Contact localContacts[], int &localCount, Contact emergencyContacts[], int &emergencyCount)
+    {
+        AddContact addContactHelper;
+        while (true)
+        {
+            string keyword;
+            while (true)
+            {
+                cout << "\n\n\tEnter search keyword (name, number, or email) for editing: \t";
+                getline(cin, keyword);
+                if (stringValidation(keyword))
+                {
+                    break;
+                }
+                cout << "\n\tInvalid input. Please enter a valid keyword.\n";
+            }
+
+            Contact *results[100];
+            int resultsCount = 0;
+
+            findContacts(ptclContacts, ptclCount, keyword, results, resultsCount);
+            findContacts(localContacts, localCount, keyword, results, resultsCount);
+            findContacts(emergencyContacts, emergencyCount, keyword, results, resultsCount);
+
+            if (resultsCount == 0)
+            {
+                cout << "\n\n\tNo contact found!\n";
+                break;
+            }
+            else if (resultsCount == 1)
+            {
+                displayContact(*results[0]);
+                if (confirmEdit())
+                {
+                    editSpecificContact(*results[0], ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount, addContactHelper);
+                }
+                break;
+            }
+            else
+            {
+                cout << "\n\n\tMultiple contacts found. Enter more specific keyword to narrow down:\n";
+                for (int i = 0; i < resultsCount; ++i)
+                {
+                    displayContact(*results[i]);
+                }
+            }
+        }
+    }
+
+private:
+    void findContacts(Contact contacts[], int count, const string &keyword, Contact *results[], int &resultsCount)
+    {
+        string keywordLower = toLower(keyword);
+        for (int i = 0; i < count; ++i)
+        {
+            if (toLower(contacts[i].getName()).find(keywordLower) != string::npos ||
+                contacts[i].getNumber().find(keyword) != string::npos ||
+                contacts[i].getEmail().find(keyword) != string::npos)
+            {
+                results[resultsCount++] = &contacts[i];
+            }
+        }
+    }
+
+    void displayContact(const Contact &contact)
+    {
+        cout << "\n\tName : \t\t" << contact.getName();
+        cout << "\n\tNumber :\t" << contact.getNumber();
+        if (contact.getType() != "Emergency")
+        {
+            cout << "\n\tEmail : \t" << contact.getEmail();
+        }
+        cout << "\n\tType : \t\t" << contact.getType();
+        cout << "\n";
+    }
+
+    bool confirmEdit()
+    {
+        string choice;
+        while (true)
+        {
+            cout << "\n\tDo you want to edit this contact? (y/n): ";
+            getline(cin, choice);
+            if (stringValidation(choice) && (choice == "y" || choice == "Y" || choice == "n" || choice == "N"))
+            {
+                return (choice == "y" || choice == "Y");
+            }
+            cout << "\n\tInvalid input. Please enter 'y' or 'n'.\n";
+        }
+    }
+
+    void editSpecificContact(Contact &contact, Contact ptclContacts[], int ptclCount, Contact localContacts[], int localCount, Contact emergencyContacts[], int emergencyCount, AddContact &addContactHelper)
+    {
+        cout << "\n\nEditing contact. Press Enter to skip an attribute.\n";
+
+        string input;
+        cout << "\n\tNew name (current: " << contact.getName() << ") : \t";
+        getline(cin, input);
+        if (!input.empty())
+        {
+            contact.setName(input);
+        }
+
+        while (true)
+        {
+            cout << "\n\tNew number (current: " << contact.getNumber() << ") : \t";
+            getline(cin, input);
+            if (input.empty())
+            {
+                break;
+            }
+            if ((contact.getType() == "Local" && addContactHelper.localPhoneNumberValidation(input)) ||
+                (contact.getType() != "Local" && addContactHelper.phoneNumberValidation(input)))
+            {
+                if (addContactHelper.isUniqueNumber(input, ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount))
+                {
+                    contact.setNumber(input);
+                    break;
+                }
+                else
+                {
+                    cout << "\n\tThis number is already registered. Please enter a different number.\n";
+                }
+            }
+            else
+            {
+                cout << "\n\tInvalid input. Please enter a valid phone number.\n";
+            }
+        }
+
+        if (contact.getType() != "Emergency")
+        {
+            while (true)
+            {
+                cout << "\n\tNew email (current: " << contact.getEmail() << ") : \t";
+                getline(cin, input);
+                if (input.empty())
+                {
+                    break;
+                }
+                if (addContactHelper.emailValidation(input))
+                {
+                    if (addContactHelper.isUniqueEmail(input, ptclContacts, ptclCount, localContacts, localCount))
+                    {
+                        contact.setEmail(input);
+                        break;
+                    }
+                    else
+                    {
+                        cout << "\n\tThis email is already registered. Please enter a different email.\n";
+                    }
+                }
+                else
+                {
+                    cout << "\n\tInvalid input. Please enter a valid email ending with @gmail.com.\n";
+                }
+            }
+        }
+
+        cout << "\n\tUpdated Successfully!\n";
+    }
+
+    string toLower(const string &str)
+    {
+        string lowerStr = str;
+        transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+        return lowerStr;
+    }
+};
