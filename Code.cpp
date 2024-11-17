@@ -595,3 +595,136 @@ private:
         return lowerStr;
     }
 };
+class DeleteContact : public Validations
+{
+public:
+    void deleteContact(Contact ptclContacts[], int &ptclCount, Contact localContacts[], int &localCount, Contact emergencyContacts[], int &emergencyCount)
+    {
+        while (true)
+        {
+            string keyword;
+            while (true)
+            {
+                cout << "\n\n\tEnter search keyword (name, number, or email) for deleting: \t";
+                getline(cin, keyword);
+                if (stringValidation(keyword))
+                {
+                    break;
+                }
+                cout << "\n\tInvalid input. Please enter a valid keyword.\n";
+            }
+
+            Contact *results[100];
+            int resultsCount = 0;
+
+            findContacts(ptclContacts, ptclCount, keyword, results, resultsCount);
+            findContacts(localContacts, localCount, keyword, results, resultsCount);
+            findContacts(emergencyContacts, emergencyCount, keyword, results, resultsCount);
+
+            if (resultsCount == 0)
+            {
+                cout << "\n\n\tNo contact found!\n";
+                break;
+            }
+            else if (resultsCount == 1)
+            {
+                displayContact(*results[0]);
+                if (confirmDeletion())
+                {
+                    deleteSpecificContact(results[0], ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+                    cout << "\n\n\tContact Deleted Successfully!\n";
+                }
+                break;
+            }
+            else
+            {
+                cout << "\n\n\tMultiple contacts found. Enter more specific keyword to narrow down:\n";
+                for (int i = 0; i < resultsCount; ++i)
+                {
+                    displayContact(*results[i]);
+                }
+            }
+        }
+    }
+
+private:
+    void findContacts(Contact contacts[], int count, const string &keyword, Contact *results[], int &resultsCount)
+    {
+        string keywordLower = toLower(keyword);
+        for (int i = 0; i < count; ++i)
+        {
+            if (toLower(contacts[i].getName()).find(keywordLower) != string::npos ||
+                contacts[i].getNumber().find(keyword) != string::npos ||
+                contacts[i].getEmail().find(keyword) != string::npos)
+            {
+                results[resultsCount++] = &contacts[i];
+            }
+        }
+    }
+
+    void displayContact(const Contact &contact)
+    {
+        cout << "\n\tName : \t\t" << contact.getName();
+        cout << "\n\tNumber :\t" << contact.getNumber();
+        if (contact.getType() != "Emergency")
+        {
+            cout << "\n\tEmail : \t" << contact.getEmail();
+        }
+        cout << "\n\tType : \t\t" << contact.getType();
+        cout << "\n";
+    }
+
+    bool confirmDeletion()
+    {
+        string choice;
+        while (true)
+        {
+            cout << "\n\tAre you sure you want to delete this contact? (y/n): ";
+            getline(cin, choice);
+            if (stringValidation(choice) && (choice == "y" || choice == "Y" || choice == "n" || choice == "N"))
+            {
+                return (choice == "y" || choice == "Y");
+            }
+            cout << "\n\tInvalid input. Please enter 'y' or 'n'.\n";
+        }
+    }
+
+    void deleteSpecificContact(Contact *contact, Contact ptclContacts[], int &ptclCount, Contact localContacts[], int &localCount, Contact emergencyContacts[], int &emergencyCount)
+    {
+        if (contact->getType() == "PTCL")
+        {
+            removeContact(contact, ptclContacts, ptclCount);
+        }
+        else if (contact->getType() == "Local")
+        {
+            removeContact(contact, localContacts, localCount);
+        }
+        else if (contact->getType() == "Emergency")
+        {
+            removeContact(contact, emergencyContacts, emergencyCount);
+        }
+    }
+
+    void removeContact(Contact *contact, Contact contacts[], int &count)
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            if (&contacts[i] == contact)
+            {
+                for (int j = i; j < count - 1; ++j)
+                {
+                    contacts[j] = contacts[j + 1];
+                }
+                --count;
+                break;
+            }
+        }
+    }
+
+    string toLower(const string &str)
+    {
+        string lowerStr = str;
+        transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+        return lowerStr;
+    }
+};
