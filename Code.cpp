@@ -728,3 +728,267 @@ private:
         return lowerStr;
     }
 };
+class FavoriteContact : public Validations
+{
+public:
+    void manageFavorites(Contact ptclContacts[], int ptclCount, Contact localContacts[], int localCount, Contact emergencyContacts[], int emergencyCount, Contact favorites[], int &favCount)
+    {
+        bool back = false;
+        while (!back)
+        {
+            cout << "\n\n\t ____________________________________________\n";
+            cout << "\t|\t   Favorite Contacts\t\t     |\n";
+            cout << "\t|____________________________________________|\n";
+            cout << "\t|   |" << setw(42) << "|\n";
+            cout << "\t| 1 |  Add Favorite " << setw(27) << "|\n";
+            cout << "\t| 2 |  Remove Favorite " << setw(24) << "|\n";
+            cout << "\t| 3 |  Display Favorites " << setw(22) << "|\n";
+            cout << "\t| 0 |  Main page " << setw(30) << "|\n";
+            cout << "\t|___|________________________________________|\n\n";
+            string choice;
+            while (true)
+            {
+                cout << "\tEnter your choice: ";
+                getline(cin, choice);
+                if (stringValidation(choice) && (choice == "1" || choice == "2" || choice == "3" || choice == "0"))
+                {
+                    break;
+                }
+                cout << "\n\tInvalid input. Please enter a valid choice (0, 1, 2, or 3).\n";
+            }
+
+            if (choice == "1")
+            {
+                addFavorite(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount, favorites, favCount);
+            }
+            else if (choice == "2")
+            {
+                removeFavorite(favorites, favCount);
+            }
+            else if (choice == "3")
+            {
+                displayFavorites(favorites, favCount);
+            }
+            else if (choice == "0")
+            {
+                back = true;
+            }
+            else
+            {
+                cout << "\n\n\tInvalid choice. Please try again.\n";
+            }
+        }
+    }
+
+private:
+    void addFavorite(Contact ptclContacts[], int ptclCount, Contact localContacts[], int localCount, Contact emergencyContacts[], int emergencyCount, Contact favorites[], int &favCount)
+    {
+        while (true)
+        {
+            string keyword;
+            while (true)
+            {
+                cout << "\n\n\tEnter search keyword (name, number, or email) to add to favorites: \t";
+                getline(cin, keyword);
+                if (stringValidation(keyword))
+                {
+                    break;
+                }
+                cout << "\n\tInvalid input. Please enter a valid keyword.\n";
+            }
+
+            Contact *results[100];
+            int resultsCount = 0;
+
+            findContacts(ptclContacts, ptclCount, keyword, results, resultsCount);
+            findContacts(localContacts, localCount, keyword, results, resultsCount);
+            findContacts(emergencyContacts, emergencyCount, keyword, results, resultsCount);
+
+            if (resultsCount == 0)
+            {
+                cout << "\n\n\tNo contact found!\n";
+                break;
+            }
+            else if (resultsCount == 1)
+            {
+                if (isFavorite(*results[0], favorites, favCount))
+                {
+                    cout << "\n\n\tThis contact is already in your favorites.\n";
+                }
+                else
+                {
+                    displayContact(*results[0]);
+                    if (confirmAddition())
+                    {
+                        favorites[favCount++] = *results[0];
+                        cout << "\n\n\tContact added to favorites successfully!\n";
+                    }
+                }
+                break;
+            }
+            else
+            {
+                cout << "\n\n\tMultiple contacts found. Enter more specific keyword to narrow down:\n";
+                for (int i = 0; i < resultsCount; ++i)
+                {
+                    displayContact(*results[i]);
+                }
+            }
+        }
+    }
+
+    void removeFavorite(Contact favorites[], int &favCount)
+    {
+        while (true)
+        {
+            string keyword;
+            while (true)
+            {
+                cout << "\n\n\tEnter search keyword (name, number, or email) to remove from favorites: \t";
+                getline(cin, keyword);
+                if (stringValidation(keyword))
+                {
+                    break;
+                }
+                cout << "\n\tInvalid input. Please enter a valid keyword.\n";
+            }
+
+            Contact *results[100];
+            int resultsCount = 0;
+
+            findContacts(favorites, favCount, keyword, results, resultsCount);
+
+            if (resultsCount == 0)
+            {
+                cout << "\n\n\tNo contact found!\n";
+                break;
+            }
+            else if (resultsCount == 1)
+            {
+                displayContact(*results[0]);
+                if (confirmRemoval())
+                {
+                    removeContact(results[0], favorites, favCount);
+                    cout << "\n\n\tContact removed from favorites successfully!\n";
+                }
+                break;
+            }
+            else
+            {
+                cout << "\n\n\tMultiple contacts found. Enter more specific keyword to narrow down:\n";
+                for (int i = 0; i < resultsCount; ++i)
+                {
+                    displayContact(*results[i]);
+                }
+            }
+        }
+    }
+
+    void displayFavorites(Contact favorites[], int favCount)
+    {
+        if (favCount == 0)
+        {
+            cout << "\n\n\n\tNo favorite contact found.\n\n";
+        }
+        else
+        {
+            for (int i = 0; i < favCount; i++)
+            {
+                displayContact(favorites[i]);
+            }
+        }
+    }
+
+    void findContacts(Contact contacts[], int count, const string &keyword, Contact *results[], int &resultsCount)
+    {
+        string keywordLower = toLower(keyword);
+        for (int i = 0; i < count; ++i)
+        {
+            if (toLower(contacts[i].getName()).find(keywordLower) != string::npos ||
+                contacts[i].getNumber().find(keyword) != string::npos ||
+                contacts[i].getEmail().find(keyword) != string::npos)
+            {
+                results[resultsCount++] = &contacts[i];
+            }
+        }
+    }
+
+    void displayContact(const Contact &contact)
+    {
+        cout << "\n\tName : \t\t" << contact.getName();
+        cout << "\n\tNumber :\t" << contact.getNumber();
+        if (contact.getType() != "Emergency")
+        {
+            cout << "\n\tEmail : \t" << contact.getEmail();
+        }
+        cout << "\n\tType : \t\t" << contact.getType();
+        cout << "\n";
+    }
+
+    bool confirmAddition()
+    {
+        string choice;
+        while (true)
+        {
+            cout << "\n\tAre you sure you want to add this contact to favorites? (y/n): ";
+            getline(cin, choice);
+            if (stringValidation(choice) && (choice == "y" || choice == "Y" || choice == "n" || choice == "N"))
+            {
+                return (choice == "y" || choice == "Y");
+            }
+            cout << "\n\tInvalid input. Please enter 'y' or 'n'.\n";
+        }
+    }
+
+    bool confirmRemoval()
+    {
+        string choice;
+        while (true)
+        {
+            cout << "\n\tAre you sure you want to remove this contact from favorites? (y/n): ";
+            getline(cin, choice);
+            if (stringValidation(choice) && (choice == "y" || choice == "Y" || choice == "n" || choice == "N"))
+            {
+                return (choice == "y" || choice == "Y");
+            }
+            cout << "\n\tInvalid input. Please enter 'y' or 'n'.\n";
+        }
+    }
+
+    void removeContact(Contact *contact, Contact contacts[], int &count)
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            if (&contacts[i] == contact)
+            {
+                for (int j = i; j < count - 1; ++j)
+                {
+                    contacts[j] = contacts[j + 1];
+                }
+                --count;
+                break;
+            }
+        }
+    }
+
+    bool isFavorite(const Contact &contact, Contact favorites[], int favCount)
+    {
+        for (int i = 0; i < favCount; ++i)
+        {
+            if (favorites[i].getName() == contact.getName() &&
+                favorites[i].getNumber() == contact.getNumber() &&
+                favorites[i].getEmail() == contact.getEmail())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    string toLower(const string &str)
+    {
+        string lowerStr = str;
+        transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), ::tolower);
+        return lowerStr;
+    }
+};
