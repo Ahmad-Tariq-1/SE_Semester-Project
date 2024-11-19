@@ -992,3 +992,62 @@ private:
         return lowerStr;
     }
 };
+class AllContacts
+{
+public:
+    void displayAllContacts(Contact ptclContacts[], int ptclCount, Contact localContacts[], int localCount, Contact emergencyContacts[], int emergencyCount)
+    {
+        bool hasLocal = false;
+        bool hasPTCL = false;
+        bool hasEmergency = false;
+
+        cout << "\n\n\tLocal Contacts:\n";
+        for (int i = 0; i < localCount; i++)
+        {
+            displayContact(localContacts[i]);
+            hasLocal = true;
+        }
+
+        if (!hasLocal)
+        {
+            cout << "\n\tNo Local contacts found.\n";
+        }
+
+        cout << "\n\n\tPTCL Contacts:\n";
+        for (int i = 0; i < ptclCount; i++)
+        {
+            displayContact(ptclContacts[i]);
+            hasPTCL = true;
+        }
+
+        if (!hasPTCL)
+        {
+            cout << "\n\tNo PTCL contacts found.\n";
+        }
+
+        cout << "\n\n\tEmergency Contacts:\n";
+        for (int i = 0; i < emergencyCount; i++)
+        {
+            displayContact(emergencyContacts[i]);
+            hasEmergency = true;
+        }
+
+        if (!hasEmergency)
+        {
+            cout << "\n\tNo Emergency contacts found.\n";
+        }
+    }
+
+private:
+    void displayContact(const Contact &contact)
+    {
+        cout << "\n\tName : \t\t" << contact.getName();
+        cout << "\n\tNumber :\t" << contact.getNumber();
+        if (contact.getType() != "Emergency")
+        {
+            cout << "\n\tEmail : \t" << contact.getEmail();
+        }
+        cout << "\n\tType : \t\t" << contact.getType();
+        cout << "\n";
+    }
+};
