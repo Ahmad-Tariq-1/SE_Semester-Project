@@ -1150,3 +1150,22 @@ public:
             }
         }
     }
+
+private:
+    void showEmergencyContacts()
+    {
+        cout << "\n\n\tEmergency Contacts:\n";
+        cout << "\t1. Police - 911\n";
+        cout << "\t2. Fire Department - 911\n";
+        cout << "\t3. Ambulance - 911\n";
+        cout << "\t4. Poison Control - 911\n";
+        cout << "\t5. Disaster Relief - 911\n";
+        cout << "\t6. Animal Control - 911\n";
+        cout << "\t7. Coast Guard - 911\n";
+        cout << "\t8. Mountain Rescue - 911\n";
+        cout << "\t9. Suicide Hotline - 911\n";
+        cout << "\t10. Gas Leak - 911\n";
+    }
+
+    string storedPassword = "ahmii";
+};
