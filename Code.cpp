@@ -1051,3 +1051,102 @@ private:
         cout << "\n";
     }
 };
+class Login : public Validations
+{
+public:
+    bool authenticate()
+    {
+        int attempts = 0;
+        string password;
+        cout << "\n\n\t****** Login *****\n";
+        while (true)
+        {
+            cout << "\n\tEnter your Password :  ";
+            getline(cin, password);
+            if (stringValidation(password))
+            {
+                if (attempts >= 3)
+                {
+                    showEmergencyContacts();
+                    string choice;
+                    while (true)
+                    {
+                        cout << "\n\tDo you want to continue logging in or exit? (login/exit): ";
+                        getline(cin, choice);
+                        if (stringValidation(choice) && (choice == "login" || choice == "exit"))
+                        {
+                            break;
+                        }
+                        cout << "\n\tInvalid input. Please enter 'login' or 'exit'.\n";
+                    }
+                    if (choice == "exit")
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        attempts = 0;
+                        continue;
+                    }
+                }
+                if (password == storedPassword)
+                {
+                    cout << "\n\tPlease wait ";
+                    for (int i = 0; i < 5; i++)
+                    {
+                        cout << ".";
+                        Sleep(300);
+                    }
+                    cout << "\n\n\tPassword matched!";
+                    Sleep(1000);
+                    system("cls");
+                    cout << "\n\n\n\t ******* Welcome to Phone-book Project ******\n";
+                    return true;
+                }
+                else
+                {
+                    system("cls");
+                    cout << "\n\n\tWrong Password!";
+                    attempts++;
+                }
+            }
+            cout << "\n\tInvalid input. Please enter a valid password.\n";
+        }
+    }
+
+   void changePassword()
+    {
+        string oldPassword, newPassword;
+        while (true)
+        {
+            cout << "\n\tEnter your old password: ";
+            getline(cin, oldPassword);
+            if (stringValidation(oldPassword))
+            {
+                if (oldPassword == storedPassword)
+                {
+                    while (true)
+                    {
+                        cout << "\n\tEnter your new password: ";
+                        getline(cin, newPassword);
+                        if (stringValidation(newPassword))
+                        {
+                            storedPassword = newPassword;
+                            cout << "\n\tPassword changed successfully!\n";
+                            return;
+                        }
+                        cout << "\n\tInvalid input!";
+                    }
+                }
+                else
+                {
+                    cout << "\n\tIncorrect old password!\n";
+                    return;
+                }
+            }
+            else
+            {
+                cout << "\n\tInvalid input!";
+            }
+        }
+    }
