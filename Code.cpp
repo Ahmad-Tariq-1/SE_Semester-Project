@@ -1169,3 +1169,17 @@ private:
 
     string storedPassword = "ahmii";
 };
+class PhoneBookApp : public AddContact, public DeleteContact, public SearchContact, public EditContact, public AllContacts, public FavoriteContact
+{
+protected:
+    Contact ptclContacts[100];
+    Contact localContacts[100];
+    Contact emergencyContacts[100];
+    Contact favorites[100];
+
+    int ptclCount = 0;
+    int localCount = 0;
+    int emergencyCount = 0;
+    int favCount = 0;
+
+    Login login;
