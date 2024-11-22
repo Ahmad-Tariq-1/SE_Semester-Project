@@ -1183,3 +1183,98 @@ protected:
     int favCount = 0;
 
     Login login;
+
+public:
+    PhoneBookApp(Login &loginObj) : login(loginObj)
+    {
+        cout << "\n\n\t ********** Welcome to Phone Book **********\n";
+        initializeEmergencyContacts();
+    }
+
+    void displayMenu()
+    {
+        cout << "\n\n\t ____________________________________________\n";
+        cout << "\t|\t\t   Phone Book\t\t     |\n";
+        cout << "\t|____________________________________________|\n";
+        cout << "\t|   |" << setw(42) << "|\n";
+        cout << "\t| 1 |  New Contact " << setw(28) << "|\n";
+        cout << "\t| 2 |  Edit a contact " << setw(25) << "|\n";
+        cout << "\t| 3 |  Search Contact " << setw(25) << "|\n";
+        cout << "\t| 4 |  Delete Contact " << setw(25) << "|\n";
+        cout << "\t| 5 |  List all Contacts " << setw(22) << "|\n";
+        cout << "\t| 6 |  Favorite Contacts " << setw(22) << "|\n";
+        cout << "\t| 7 |  Change Password " << setw(24) << "|\n";
+        cout << "\t| 0 |  Exit " << setw(35) << "|\n";
+        cout << "\t|___|________________________________________|\n\n";
+        cout << "\tPress a key to continue ... ";
+    }
+
+    void startApp()
+    {
+        while (true)
+        {
+            displayMenu();
+            string choice;
+            getline(cin, choice);
+            if (choice == "1")
+            {
+                system("cls");
+                addContact(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+            }
+            else if (choice == "2")
+            {
+                system("cls");
+                editContact(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+            }
+            else if (choice == "3")
+            {
+                system("cls");
+                searchContacts(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+            }
+            else if (choice == "4")
+            {
+                system("cls");
+                deleteContact(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+            }
+            else if (choice == "5")
+            {
+                system("cls");
+                displayAllContacts(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount);
+            }
+            else if (choice == "6")
+            {
+                system("cls");
+                manageFavorites(ptclContacts, ptclCount, localContacts, localCount, emergencyContacts, emergencyCount, favorites, favCount);
+            }
+            else if (choice == "7")
+            {
+                system("cls");
+                login.changePassword();
+            }
+            else if (choice == "0")
+            {
+                cout << "\n\n\tThank you for using Phone Book. Goodbye!\n";
+                break;
+            }
+            else
+            {
+                cout << "\n\n\tInvalid choice. Please try again.\n";
+            }
+        }
+    }
+
+private:
+    void initializeEmergencyContacts()
+    {
+        emergencyContacts[emergencyCount++] = Contact("Police", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Fire Department", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Ambulance", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Poison Control", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Disaster Relief", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Animal Control", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Coast Guard", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Mountain Rescue", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Suicide Hotline", "911", "", "Emergency");
+        emergencyContacts[emergencyCount++] = Contact("Gas Leak", "911", "", "Emergency");
+    }
+};
