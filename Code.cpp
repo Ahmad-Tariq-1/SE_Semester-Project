@@ -1187,14 +1187,14 @@ protected:
 public:
     PhoneBookApp(Login &loginObj) : login(loginObj)
     {
-        cout << "\n\n\t ********** Welcome to Phone Book **********\n";
+        cout << "\n\n\t ********** Welcome to Contact Book Application **********\n";
         initializeEmergencyContacts();
     }
 
     void displayMenu()
     {
         cout << "\n\n\t ____________________________________________\n";
-        cout << "\t|\t\t   Phone Book\t\t     |\n";
+        cout << "\t|\t\t   Contact Book\t\t     |\n";
         cout << "\t|____________________________________________|\n";
         cout << "\t|   |" << setw(42) << "|\n";
         cout << "\t| 1 |  New Contact " << setw(28) << "|\n";
@@ -1278,3 +1278,13 @@ private:
         emergencyContacts[emergencyCount++] = Contact("Gas Leak", "911", "", "Emergency");
     }
 };
+int main()
+{
+    Login login;
+     if (login.authenticate())
+    {
+        PhoneBookApp app(login);
+        app.startApp();
+    }
+    return 0;
+}
